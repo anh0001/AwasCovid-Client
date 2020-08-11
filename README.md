@@ -1,8 +1,8 @@
-[![License: MIT](https://img.shields.io/github/license/vintasoftware/django-react-boilerplate.svg)](LICENSE.txt)
+# AwasCovid-Client
 
-# Django React Boilerplate
+This repo is based on Django React Boilerplate.
 
-Troubleshooting:
+## Troubleshooting:
 
 - In order to run the server on the same network such as a wifi, 
 
