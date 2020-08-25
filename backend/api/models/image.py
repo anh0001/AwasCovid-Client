@@ -5,6 +5,8 @@ from django.db import models
 class Image(models.Model):
     device_id = models.CharField(max_length=100)
     image_id = models.CharField(max_length=100)
+    min_temperature = models.IntegerField(default=30)
+    max_temperature = models.IntegerField(default=45)
     image_array = models.TextField(null= True)
     photo_filename = models.CharField(max_length=200)
     thermal_filename = models.CharField(max_length=200)

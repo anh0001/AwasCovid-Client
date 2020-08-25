@@ -83,6 +83,9 @@ def detect_faces_callback(self, *args, **kwargs):
     thermal_filename = image_object.thermal_filename
     thermal_output_filename = image_object.thermal_output_filename
 
+    min_temperature = image_object.min_temperature
+    max_temperature = image_object.max_temperature
+
     # delete file if exist
     if os.path.exists(photo_output_filename):
         os.remove(photo_output_filename)
@@ -102,7 +105,9 @@ def detect_faces_callback(self, *args, **kwargs):
     photo_image = cv2.cvtColor(photo_image, cv2.COLOR_RGB2BGR)
     photo_image = photo_image.copy()
     thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_RGB2BGR)
-    thermal_image = thermal_image.copy()
+    colormap_thermal_image = thermal_image.copy()
+    # apply colormap
+    cv2.applyColorMap(colormap_thermal_image, cv2.COLORMAP_MAGMA, colormap_thermal_image)
 
     height_ratio = thermal_image.shape[0] / photo_image.shape[0]
     width_ratio = thermal_image.shape[1] / photo_image.shape[1]
@@ -126,15 +131,23 @@ def detect_faces_callback(self, *args, **kwargs):
         x2 = int(x2 * width_ratio)
         y1 = int(y1 * height_ratio)
         y2 = int(y2 * height_ratio)
-        roi_im = thermal_image[y1:y2, x1:x2, 0]
-        average_temp = np.sum(roi_im) / cv2.countNonZero(roi_im)
-        average_temp = average_temp * 0.2764  # scale factor
 
-        cv2.rectangle(thermal_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
-        cv2.putText(thermal_image,
-                    "{0:.2f}".format(float(average_temp)),
+        # calculate temperature based on averaging
+        # roi_im = thermal_image[y1:y2, x1:x2, 0]
+        # average_temp = np.sum(roi_im) / cv2.countNonZero(roi_im)
+        # average_temp = average_temp * 0.2764  # scale factor
+
+        # calculate temperature based on center position and scaling with min-max temperature
+        center_x = x1 + int((x2-x1)/2)
+        center_y = y1 + int((y2-y1)/2)
+        average_temp = thermal_image[center_y, center_x, 0]
+        average_temp = min_temperature + average_temp * (max_temperature-min_temperature) / 255.0
+
+        cv2.rectangle(colormap_thermal_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
+        cv2.putText(colormap_thermal_image,
+                    "{0:.2f}°C".format(float(average_temp)),
                     (x1, (y2 + 25)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
 
         x1, y1, width, height = box
         x1, y1 = abs(x1), abs(y1)
@@ -146,12 +159,11 @@ def detect_faces_callback(self, *args, **kwargs):
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
 
 
-
     # convert back to pil image
     photo_image = cv2.cvtColor(photo_image, cv2.COLOR_BGR2RGB)
     photo_pil_im = PImage.fromarray(photo_image)
-    thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_BGR2RGB)
-    thermal_pil_im = PImage.fromarray(thermal_image)
+    colormap_thermal_image = cv2.cvtColor(colormap_thermal_image, cv2.COLOR_BGR2RGB)
+    thermal_pil_im = PImage.fromarray(colormap_thermal_image)
 
     photo_silver_bullet = io.BytesIO()
     thermal_silver_bullet = io.BytesIO()
