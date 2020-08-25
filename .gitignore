@@ -20,6 +20,7 @@ __pycache__/
 
 # npm
 node_modules/
+/frontend/node_modules/
 npm-debug.log
 
 # Webpack
@@ -39,6 +40,7 @@ npm-debug.log
 /output/
 /cache/
 boilerplate.zip
+/backend/mediafiles/
 
 # Spritesmith
 spritesmith-generated/

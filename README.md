@@ -76,6 +76,48 @@ This repo is based on Django React Boilerplate.
 
 - In order to delete the backend database, just delete the db.sqlite3 file in the backend folder, and delete the xxxx_initial.py in the modified migrations folder. Then make a Django makemigrations and migrate.
 
+### Backend (Windows 10)
+
+- Make sure using python > 3.8 from python.org.
+
+  Open powershell in windows 10
+
+  Create environment ``python -m venv env``
+
+  `.\env\Scripts\activate`
+
+  keep the environment active
+
+- Install pip and requirements
+
+  `pip install -r requirements.txt`
+
+  `pip install -r dev-requirements.txt`
+
+- Inside the `backend` folder, do the following:
+
+  Create a copy of ``awascovid/settings/local.py.example``:  
+  `cp awascovid/settings/local.py.example awascovid/settings/local.py`
+
+  Create a copy of ``.env.example``:
+  `cp .env.example .env`
+
+- database migration
+
+  ```bash
+  cd backend/
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
+
+- In order to run the server on the same network such as a wifi, 
+
+  ```bash
+  python ./manage.py runserver 0.0.0.0:8000
+  ```
+
+- 
+
 ## About
 
 A [Django](https://www.djangoproject.com/) project boilerplate/template with lots of state of the art libraries and tools like:
