@@ -4,7 +4,7 @@ This repo is based on Django React Boilerplate.
 
 ## Troubleshooting:
 
-### Frontend (Tested in WSL Ubuntu 20.04)
+### Frontend (Tested in Windows 10 and WSL Ubuntu 20.04)
 
 - ```bash
   cd frontend
@@ -15,7 +15,7 @@ This repo is based on Django React Boilerplate.
 
   Then open web browser and enter URL according to the URL and port as shown in the terminal
 
-### Backend (Tested in WSL Ubuntu 20.04)
+### Backend (WSL Ubuntu 20.04, still tested)
 
 - install Django (make sure using python 3.8)
 
@@ -76,11 +76,11 @@ This repo is based on Django React Boilerplate.
 
 - In order to delete the backend database, just delete the db.sqlite3 file in the backend folder, and delete the xxxx_initial.py in the modified migrations folder. Then make a Django makemigrations and migrate.
 
-### Backend (Windows 10)
+### Backend (worked in Windows 10)
 
 - Make sure using python > 3.8 from python.org.
 
-  Open powershell in windows 10
+  Open Powershell in windows 10
 
   Create environment ``python -m venv env``
 
