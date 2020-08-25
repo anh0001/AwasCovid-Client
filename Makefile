@@ -41,6 +41,8 @@ compile_install_requirements:
 	@echo 'Installing pip-tools...'
 	export PIP_REQUIRE_VIRTUALENV=true; \
 	pip install pip-tools
+	@echo 'Installing psycopg2-binary'
+	pip install psycopg2-binary
 	@echo 'Compiling requirements...'
 	pip-compile requirements.in > requirements.txt
 	pip-compile dev-requirements.in > dev-requirements.txt

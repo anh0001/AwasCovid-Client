@@ -4,15 +4,77 @@ This repo is based on Django React Boilerplate.
 
 ## Troubleshooting:
 
+### Frontend (Tested in WSL Ubuntu 20.04)
+
+- ```bash
+  cd frontend
+  npm install
+  npm run build:dll
+  npm start
+  ```
+
+  Then open web browser and enter URL according to the URL and port as shown in the terminal
+
+### Backend (Tested in WSL Ubuntu 20.04)
+
+- install Django (make sure using python 3.8)
+
+  ```bash
+  pip install django
+  ```
+
+- ```bash
+  sudo apt-get install gcc libpq-dev -y
+  sudo apt-get install python-dev  python-pip -y
+  sudo apt-get install python3-dev python3-pip python3-venv python3-wheel -y
+  ```
+
+- create environment (Use python 3) and activate the environment
+
+  ```bash
+  python3 -m venv env
+  source ./env/bin/activate
+  ```
+
+  Make sure the environment always active for executing the below commands
+
+- install wheel
+
+  ```bash
+  pip3 install wheel
+  ```
+
+- run the below command
+
+  ```bash
+  make compile_install_requirements
+  ```
+
+- Inside the `backend` folder, do the following:
+
+  Create a copy of ``awascovid/settings/local.py.example``:  
+  `cp awascovid/settings/local.py.example awascovid/settings/local.py`
+
+  Create a copy of ``.env.example``:
+  `cp .env.example .env`
+
+- database migration
+
+  ```
+  cd backend/
+  python3 manage.py makemigrations
+  python3 manage.py migrate
+  ```
+
 - In order to run the server on the same network such as a wifi, 
 
   ```bash
-  python ./manage.py runserver 0.0.0.0:8000
+  python3 ./manage.py runserver 0.0.0.0:8000
   ```
 
 - Set ALLOWED_HOSTS = ['*']
 
-- In order to delete the backend database, just delete the db.sqlite3 file in the backend folder, and delete the xxxx_initial.py in the modified migrations folder. Then make a django migration.
+- In order to delete the backend database, just delete the db.sqlite3 file in the backend folder, and delete the xxxx_initial.py in the modified migrations folder. Then make a Django makemigrations and migrate.
 
 ## About
 
