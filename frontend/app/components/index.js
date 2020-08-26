@@ -8,6 +8,7 @@ export SourceReader from './SourceReader/SourceReader';
 export PapperBlock from './PapperBlock/PapperBlock';
 export SearchUi from './Search/SearchUi';
 export SelectLanguage from './SelectLanguage';
+export Setting from './Setting/Setting';
 // Guide
 export GuideSlider from './GuideSlider';
 // Form

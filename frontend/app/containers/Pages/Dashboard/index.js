@@ -11,10 +11,15 @@ import saga from './reducers/dashboardSagas';
 
 import {
   getImageAction,
+  openSettingAction,
+  closeSettingFormAction,
 } from './reducers/dashboardActions';
 
 import brand from 'enl-api/dummy/brand';
-import { PapperBlock } from 'enl-components';
+import {
+  PapperBlock,
+  Setting,
+} from 'enl-components';
 import CompossedLineBarArea from './CompossedLineBarArea';
 import StrippedTable from '../Table/StrippedTable';
 
@@ -27,12 +32,13 @@ class BasicTable extends Component {
     super(props);
     this.state = {
       timerVal: parseInt(props.startTimeInSeconds, 10) || 0,
-      imageURL: null
+      imageURL: null,
+      imageType: 'photo',
     };
   }
 
   tick() {
-    this.props.getImageHandler('0001', 'photo');  // devide id 0001
+    this.props.getImageHandler('0001', this.state.imageType);  // devide id 0001
 
     // this.setState(state => ({
     //   timerVal: state.timerVal + 1
@@ -95,9 +101,26 @@ class BasicTable extends Component {
   //   }
   // }
 
+  saveSetting = (item) => {
+    const values = item.toJS();
+    if (!values) {
+      this.setState({ imageType: 'photo' });
+    } else if (values.photoOrThermal) {
+      this.setState({ imageType: 'thermal' });
+    } else {
+      this.setState({ imageType: 'photo' });
+    }
+    this.props.closeSettingFormHandler();
+  }
+
   render() {
     const title = brand.name + ' - Monitoring';
     const description = brand.desc;
+    const {
+      openSettingHandler,
+      openSettingForm,
+      closeSettingFormHandler,
+    } = this.props;
 
     return (
       <div>
@@ -124,19 +147,29 @@ class BasicTable extends Component {
             <StrippedTable />
           </div>
         </PapperBlock> */}
+        <Setting
+          openSetting={openSettingHandler}
+          openForm={openSettingForm}
+          closeForm={closeSettingFormHandler}
+          submit={this.saveSetting}
+        />
       </div>
     );
   }
 }
 
 BasicTable.propTypes = {
-  getImageHandler: PropTypes.func,
+  getImageHandler: PropTypes.func.isRequired,
   imageURL: PropTypes.object,
+  openSettingHandler: PropTypes.func.isRequired,
+  openSettingForm: PropTypes.bool.isRequired,
+  closeSettingFormHandler: PropTypes.func.isRequired,
   // status: PropTypes.string,
 };
 
 BasicTable.defaultProps = {
   imageURL: null,
+  openSettingForm: false,
   // status: '',
 };
 
@@ -144,13 +177,16 @@ const reducerKey = 'dashboardReducer';
 const sagaKey = reducerKey;
 
 const mapStateToProps = state => ({
-  imageURL: state.get(reducerKey).imageURL,
+  imageURL: state.getIn([reducerKey, 'imageURL']),
+  openSettingForm: state.getIn([reducerKey, 'openSettingForm']),
   // status: state.get(reducerKey).status,
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   getImageHandler: bindActionCreators(getImageAction, dispatch),
+  openSettingHandler: () => dispatch(openSettingAction),
+  closeSettingFormHandler: () => dispatch(closeSettingFormAction),
 });
 
 const withReducer = injectReducer({ key: reducerKey, reducer });

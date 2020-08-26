@@ -124,7 +124,9 @@ class Image(APIView):
 
             logging.info('image_type: %s', image_type)
 
-            image_object = Image_object.objects.filter(device_id=device_id).filter(status='processed').order_by('date_created')
+            # image_object = Image_object.objects.filter(device_id=device_id).filter(status='processed').order_by('date_created')
+            # sort descending from the latest to earliest date
+            image_object = Image_object.objects.filter(device_id=device_id).order_by('-date_created')
 
             response = None
 

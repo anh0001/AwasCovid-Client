@@ -1,7 +1,10 @@
-// import { Record } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
+
 import {
     GET_IMAGE,
     GET_IMAGE_SUCCESS,
+    OPEN_SETTING,
+    CLOSE_SETTING_FORM,
 } from './dashboardConstants';
 
 export const initialState = {
@@ -10,27 +13,46 @@ export const initialState = {
     message: null,
     imageURL: null,
     status: '',
+    settingFormValues: Map(),
+    openSettingForm: false,
 };
 
-export default function dashboardReducer(state = initialState, action = {}) {
+const initialImmutableState = fromJS(initialState);
+
+export default function dashboardReducer(state = initialImmutableState, action = {}) {
     switch (action.type) {
         case GET_IMAGE:
-            return {
-                ...state,
-                loading: true,
-                message: null,
-                deviceId: action.deviceId,
-                status: 'Buffering',
-            };
+            return state.withMutations((mutableState) => {
+                mutableState
+                    .set('loading', true)
+                    .set('message', null)
+                    .set('deviceId', action.deviceId)
+                    .set('status', action.imageType);
+            });
 
         case GET_IMAGE_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                message: null,
-                imageURL: action.payload.imageURL,
-                status: action.payload.status,
-            };
+            return state.withMutations((mutableState) => {
+                const payload = fromJS(action.payload);
+                mutableState
+                    .set('loading', false)
+                    .set('message', null)
+                    .set('imageURL', payload.get('imageURL'))
+                    .set('status', payload.get('status'));
+            });
+
+        case OPEN_SETTING:
+            return state.withMutations((mutableState) => {
+                mutableState
+                    .set('settingFormValues', Map())
+                    .set('openSettingForm', true);
+            });
+
+        case CLOSE_SETTING_FORM:
+            return state.withMutations((mutableState) => {
+                mutableState
+                    .set('settingFormValues', Map())
+                    .set('openSettingForm', false);
+            });
 
         default:
             return state;

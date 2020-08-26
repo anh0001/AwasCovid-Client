@@ -14,3 +14,11 @@ export const getImageSuccessAction = payload => ({
     type: types.GET_IMAGE_SUCCESS,
     payload
 });
+
+export const openSettingAction = {
+    type: types.OPEN_SETTING,
+};
+
+export const closeSettingFormAction = {
+    type: types.CLOSE_SETTING_FORM,
+};
