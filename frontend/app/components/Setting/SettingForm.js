@@ -13,7 +13,6 @@ import { reduxForm, Field } from 'redux-form/immutable';
 import Tooltip from '@material-ui/core/Tooltip';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormLabel from '@material-ui/core/FormLabel';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import PermContactCalendar from '@material-ui/icons/PermContactCalendar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Bookmark from '@material-ui/icons/Bookmark';
@@ -25,10 +24,11 @@ import Work from '@material-ui/icons/Work';
 import Language from '@material-ui/icons/Language';
 import css from 'enl-styles/Form.scss';
 import { injectIntl, intlShape, FormattedMessage } from 'react-intl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
-  TextFieldRedux,
-  SwitchRedux,
-} from '../Forms/ReduxFormMUI';
+  Switch as SwitchRedux,
+  Slider as SliderRedux,
+} from 'redux-form-material-ui-adapter';
 import messages from './messages';
 import styles from './setting-jss';
 
@@ -71,8 +71,29 @@ class SettingForm extends React.Component {
           <section className={css.bodyForm}>
             <div>
               <div className={classes.inlineWrap}>
-                <FormControlLabel control={<Field name="photoOrThermal" component={SwitchRedux} />} label="Photo/Thermal Image" />
+                <Typography id="photo-thermal-image" gutterBottom>
+                  Photo/Thermal Image
+                </Typography>
+                <Field name="photoOrThermal" component={SwitchRedux} />
+                {/* <FormControlLabel control={<Field name="photoOrThermal" component={SwitchRedux} />} label="Photo/Thermal Image" /> */}
               </div>
+            </div>
+            <div>
+              <Typography id="scale-image" gutterBottom>
+                Scale Image
+              </Typography>
+              <Field
+                name="scaleImage"
+                component={SliderRedux}
+                defaultValue={6}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                // format={null}
+                min={4}
+                max={12}
+                step={1}
+                marks
+              />
             </div>
           </section>
 

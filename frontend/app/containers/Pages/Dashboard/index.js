@@ -35,6 +35,7 @@ class BasicTable extends Component {
       timerVal: parseInt(props.startTimeInSeconds, 10) || 0,
       imageURL: null,
       imageType: 'photo',
+      scaleImage: 6,
       status: null,
     };
   }
@@ -104,14 +105,15 @@ class BasicTable extends Component {
   //   }
   // }
 
-  saveSetting = (item) => {
-    const values = item.toJS();
+  saveSetting = (items) => {
+    const values = items.toJS();
+    // console.log('items: ', values);
     if (!values) {
-      this.setState({ imageType: 'photo' });
+      this.setState({ imageType: 'photo', scaleImage: values.scaleImage });
     } else if (values.photoOrThermal) {
-      this.setState({ imageType: 'thermal' });
+      this.setState({ imageType: 'thermal', scaleImage: values.scaleImage });
     } else {
-      this.setState({ imageType: 'photo' });
+      this.setState({ imageType: 'photo', scaleImage: values.scaleImage });
     }
     this.props.closeSettingFormHandler();
   }
@@ -121,6 +123,7 @@ class BasicTable extends Component {
     const description = brand.desc;
     const {
       status,
+      scaleImage,
     } = this.state;
     const {
       openSettingHandler,
@@ -128,7 +131,7 @@ class BasicTable extends Component {
       closeSettingFormHandler,
     } = this.props;
 
-    console.log('status: ', status)
+    // console.log('status: ', status)
 
     return (
       <div>
@@ -144,7 +147,7 @@ class BasicTable extends Component {
           <div>
             <Grid container spacing={1} direction="row" justify="flex-start" alignItems="flex-start">
               {/* <Grid item xs={12} sm={8} md={5}> */}
-              <Grid item xs={6}>
+              <Grid item xs={scaleImage}>
                 {/* <img src={this.state.imageURL} width='100%' /> */}
                 {this.state.imageURL ?
                   <ImageCard
@@ -156,7 +159,7 @@ class BasicTable extends Component {
                   </ImageCard> : null}
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={scaleImage}>
                 {/* <img src={this.state.imageURL} width='100%' /> */}
                 {this.state.imageURL ?
                   <ImageCard
