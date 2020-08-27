@@ -26,7 +26,7 @@ function* getImageSaga({ deviceId, imageType }) {
             responseType: 'blob',
         }));
         
-        if (response.headers.status === 'success') {
+        if (response.headers.status) {
             imageURL = response.data;
         }
 

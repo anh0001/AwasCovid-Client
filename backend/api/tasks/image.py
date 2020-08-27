@@ -75,6 +75,7 @@ def detect_faces_callback(self, *args, **kwargs):
     device_id = kwargs.get("device_id")
     image_id = kwargs.get("image_id")
 
+    # get single record
     image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
 
     photo_filename = image_object.photo_filename
@@ -115,12 +116,12 @@ def detect_faces_callback(self, *args, **kwargs):
     # logging.info('height ratio', height_ratio)
     # logging.info('width ratio', width_ratio)
 
-    faces_dict = list()
+    faces_dict = {
+        'faces' : list(),
+        'status' : 'normal',
+    }
     for face in faces_on_image:
 
-        faces_dict.append({
-            "box":face.box
-        })
         box = json.loads(face.box)
 
         # get thermal bounding boxes
@@ -143,9 +144,18 @@ def detect_faces_callback(self, *args, **kwargs):
         average_temp = thermal_image[center_y, center_x, 0]
         average_temp = min_temperature + average_temp * (max_temperature-min_temperature) / 255.0
 
+        faces_dict['faces'].append({
+            "box": face.box,
+            "temperature": round(average_temp, 2),
+        })
+
+        if average_temp > 37.0:
+            image_object.covid_detected = True
+            faces_dict['status'] = 'covid detected'
+
         cv2.rectangle(colormap_thermal_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
         cv2.putText(colormap_thermal_image,
-                    "{0:.2f}°C".format(float(average_temp)),
+                    "{0:.2f}C".format(float(average_temp)),
                     (x1, (y2 + 25)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
 
@@ -186,7 +196,7 @@ def detect_faces_callback(self, *args, **kwargs):
     #     "output_image_url":"{host}/api/image/?image_id={image_id}".format(host=settings.API_HOST, image_id=image_id)
     # })
 
-    image_object.status = "processed"
+    image_object.status = json.dumps(faces_dict)
     image_object.save()
 
     # try:

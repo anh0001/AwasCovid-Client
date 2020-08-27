@@ -89,7 +89,7 @@ class Image(APIView):
             image_object.thermal_filename = thermal_filename
             image_object.photo_output_filename = photo_output_filename
             image_object.thermal_output_filename = thermal_output_filename
-            image_object.status = 'processing'
+            image_object.status = ''
             image_object.date_created = datetime.now()
             image_object.save()
         else:               # create a new record in the database
@@ -102,7 +102,7 @@ class Image(APIView):
             image.thermal_filename = thermal_filename
             image.photo_output_filename = photo_output_filename
             image.thermal_output_filename = thermal_output_filename
-            image.status = 'processing'
+            image.status = ''
             image.save()
 
         # detect_faces.s(device_id=device_id, image_id=imageid).delay()
@@ -124,7 +124,6 @@ class Image(APIView):
 
             logging.info('image_type: %s', image_type)
 
-            # image_object = Image_object.objects.filter(device_id=device_id).filter(status='processed').order_by('date_created')
             # sort descending from the latest to earliest date
             image_object = Image_object.objects.filter(device_id=device_id).order_by('-date_created')
 
@@ -160,9 +159,9 @@ class Image(APIView):
 
                 response = FileResponse(image, content_type=f"image/{extension}")
                 response["Content-Disposition"] = ("attachment; filename="f"{output_filename}")
-                response["status"] = 'success'
+                response["status"] = image_object[0].status
 
-                image_object[0].status = 'read'  # to indicate the detection is processed and has been read
+                # image_object[0].status = 'read'  # to indicate the detection is processed and has been read
                 image_object[0].save()
 
             else:

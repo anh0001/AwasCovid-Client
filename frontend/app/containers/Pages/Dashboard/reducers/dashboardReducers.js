@@ -26,8 +26,7 @@ export default function dashboardReducer(state = initialImmutableState, action =
                 mutableState
                     .set('loading', true)
                     .set('message', null)
-                    .set('deviceId', action.deviceId)
-                    .set('status', action.imageType);
+                    .set('deviceId', action.deviceId);
             });
 
         case GET_IMAGE_SUCCESS:

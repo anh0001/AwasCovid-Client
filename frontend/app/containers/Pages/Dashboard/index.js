@@ -19,6 +19,7 @@ import brand from 'enl-api/dummy/brand';
 import {
   PapperBlock,
   Setting,
+  ImageCard,
 } from 'enl-components';
 import CompossedLineBarArea from './CompossedLineBarArea';
 import StrippedTable from '../Table/StrippedTable';
@@ -34,6 +35,7 @@ class BasicTable extends Component {
       timerVal: parseInt(props.startTimeInSeconds, 10) || 0,
       imageURL: null,
       imageType: 'photo',
+      status: null,
     };
   }
 
@@ -63,6 +65,7 @@ class BasicTable extends Component {
         reader.addEventListener('load', (e) => {
           this.setState({
             imageURL: e.target.result,
+            status: JSON.parse(this.props.status),
           });
         });
         reader.readAsDataURL(this.props.imageURL);
@@ -117,10 +120,15 @@ class BasicTable extends Component {
     const title = brand.name + ' - Monitoring';
     const description = brand.desc;
     const {
+      status,
+    } = this.state;
+    const {
       openSettingHandler,
       openSettingForm,
       closeSettingFormHandler,
     } = this.props;
+
+    console.log('status: ', status)
 
     return (
       <div>
@@ -137,8 +145,29 @@ class BasicTable extends Component {
             <Grid container spacing={1} direction="row" justify="flex-start" alignItems="flex-start">
               {/* <Grid item xs={12} sm={8} md={5}> */}
               <Grid item xs={6}>
-                <img src={this.state.imageURL} width='100%' />
+                {/* <img src={this.state.imageURL} width='100%' /> */}
+                {this.state.imageURL ?
+                  <ImageCard
+                    covid_is_detected={status.status !== 'normal'}
+                    image={this.state.imageURL}
+                    title="Device-Id = 0001"
+                  >
+                    Id = 0001
+                  </ImageCard> : null}
               </Grid>
+
+              <Grid item xs={6}>
+                {/* <img src={this.state.imageURL} width='100%' /> */}
+                {this.state.imageURL ?
+                  <ImageCard
+                    covid_is_detected={status.status !== 'normal'}
+                    image={this.state.imageURL}
+                    title="Device-Id=0002"
+                  >
+                    Id = 0002
+                  </ImageCard> : null}
+              </Grid>
+
             </Grid>
           </div>
         </PapperBlock>
@@ -164,13 +193,13 @@ BasicTable.propTypes = {
   openSettingHandler: PropTypes.func.isRequired,
   openSettingForm: PropTypes.bool.isRequired,
   closeSettingFormHandler: PropTypes.func.isRequired,
-  // status: PropTypes.string,
+  status: PropTypes.string,
 };
 
 BasicTable.defaultProps = {
   imageURL: null,
   openSettingForm: false,
-  // status: '',
+  status: '',
 };
 
 const reducerKey = 'dashboardReducer';
@@ -179,7 +208,7 @@ const sagaKey = reducerKey;
 const mapStateToProps = state => ({
   imageURL: state.getIn([reducerKey, 'imageURL']),
   openSettingForm: state.getIn([reducerKey, 'openSettingForm']),
-  // status: state.get(reducerKey).status,
+  status: state.getIn([reducerKey, 'status']),
   ...state
 });
 

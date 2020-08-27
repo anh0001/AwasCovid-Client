@@ -12,6 +12,7 @@ class Image(models.Model):
     thermal_filename = models.CharField(max_length=200)
     photo_output_filename = models.CharField(max_length=200)  # output photo image with bounding box
     thermal_output_filename = models.CharField(max_length=200)  # output thermal image with bounding box
+    covid_detected = models.BooleanField(default=False)
     status = models.CharField(max_length=100, default="processing")
     # callback_url = models.CharField(max_length=100)
     date_created = models.DateTimeField(auto_now_add=True)

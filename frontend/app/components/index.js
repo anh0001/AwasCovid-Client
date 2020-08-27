@@ -9,6 +9,7 @@ export PapperBlock from './PapperBlock/PapperBlock';
 export SearchUi from './Search/SearchUi';
 export SelectLanguage from './SelectLanguage';
 export Setting from './Setting/Setting';
+export ImageCard from './CardPaper/ImageCard';
 // Guide
 export GuideSlider from './GuideSlider';
 // Form
