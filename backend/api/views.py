@@ -69,9 +69,11 @@ class Image(APIView):
         thermal_filename = upload_thermal_image(request, device_id, imageid)
 
         name, ext = os.path.splitext(photo_filename)
+        photo_preprocessed_filename = name + '_pre' + ext
         photo_output_filename = name + '_out' + ext
 
         name, ext = os.path.splitext(thermal_filename)
+        thermal_preprocessed_filename = name + '_pre' + ext
         thermal_output_filename = name + '_out' + ext
 
         ### Check if the image_id is already exist in the database
@@ -88,6 +90,8 @@ class Image(APIView):
             image_object.max_temperature = max_temperature
             image_object.photo_filename = photo_filename
             image_object.thermal_filename = thermal_filename
+            image_object.photo_preprocessed_filename = photo_preprocessed_filename
+            image_object.thermal_preprocessed_filename = thermal_preprocessed_filename
             image_object.photo_output_filename = photo_output_filename
             image_object.thermal_output_filename = thermal_output_filename
             image_object.status = ''
@@ -101,6 +105,8 @@ class Image(APIView):
             image.max_temperature = max_temperature
             image.photo_filename = photo_filename
             image.thermal_filename = thermal_filename
+            image.photo_preprocessed_filename = photo_preprocessed_filename
+            image.thermal_preprocessed_filename = thermal_preprocessed_filename
             image.photo_output_filename = photo_output_filename
             image.thermal_output_filename = thermal_output_filename
             image.status = ''
@@ -181,8 +187,8 @@ class Settings(APIView):
     # and inside body add device_id, scale, and rotate
     def post(self, request, *args, **kwargs):
         device_id = request.POST.get('device_id')
-        scale = request.POST.get('scale')
-        rotate = request.POST.get('rotate')  # in degree
+        scale = float(request.POST.get('scale'))
+        rotate = float(request.POST.get('rotate'))  # in degree
         # logging.info('device-id: %s', device_id)
         # logging.info('scale: %f', scale)
         # logging.info('rotate: %f', rotate)
@@ -207,9 +213,9 @@ class Settings(APIView):
 
         #
         settings_object = Settings_object.objects.get(device_id=device_id)
-        logging.info('device_id: %s', settings_object.device_id)
-        logging.info('rotate: %f', settings_object.rotate)
-        logging.info('scale: %f', settings_object.scale)
+        # logging.info('device_id: %s', settings_object.device_id)
+        # logging.info('rotate: %f', settings_object.rotate)
+        # logging.info('scale: %f', settings_object.scale)
 
         ### update the latest record
         # sort descending from the latest to earliest date
@@ -217,8 +223,13 @@ class Settings(APIView):
         try:
             image_objects = Image_object.objects.filter(device_id=device_id).order_by('-date_created')
             image_object = image_objects[0]
+            image_id = image_object.image_id
 
-
+            chain(
+                preprocessing_image.s(device_id=device_id, image_id=image_id) |
+                detect_faces.s(device_id=device_id, image_id=image_id) |
+                form_bounding_boxes.s(device_id=device_id, image_id=image_id)
+            ).delay()
 
             response = HttpResponse("Status OK", status.HTTP_200_OK)
 

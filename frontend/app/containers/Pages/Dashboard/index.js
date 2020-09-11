@@ -9,6 +9,8 @@ import { Helmet } from 'react-helmet';
 import reducer from './reducers/dashboardReducers';
 import saga from './reducers/dashboardSagas';
 
+import axios from 'axios';
+
 import {
   getImageAction,
   openGlobalSettingAction,
@@ -123,8 +125,29 @@ class BasicTable extends Component {
 
   saveDeviceSetting = (items) => {
     const values = items.toJS();
-    console.log('items: ', values);
-    
+    // console.log('items: ', values);
+
+    if (values.deviceId) {
+      const formData = new FormData();
+      formData.append('device_id', values.deviceId);
+
+      if (values.scaleImage)
+        formData.append('scale', values.scaleImage.toString());
+      else
+        formData.append('scale', '1.0');
+
+      if (values.rotateImage)
+        formData.append('rotate', values.rotateImage.toString());
+      else
+        formData.append('rotate', '0.0');
+
+      axios.post('http://localhost:8000/api/settings/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
+
     this.props.closeDeviceSettingFormHandler();
   }
 

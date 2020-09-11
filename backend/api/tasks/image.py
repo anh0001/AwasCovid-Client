@@ -8,8 +8,10 @@ import numpy as np
 from awascovid.celery import app
 from api.models.image import Image as Image_object
 from api.models.face import Face as Face_object
+from api.models.settings import Settings as Settings_object
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.exceptions import ObjectDoesNotExist
 import logging
 
 @app.task(bind=True, name='preprocessing_image')
@@ -20,14 +22,66 @@ def preprocessing_image(self, *args, **kwargs):
     image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
     photo_filename = image_object.photo_filename
     thermal_filename = image_object.thermal_filename
+    photo_preprocessed_filename = image_object.photo_preprocessed_filename
+    thermal_preprocessed_filename = image_object.thermal_preprocessed_filename
+
+    rotate = 0.0
+    scale = 1.0
+    try:
+        setting_object = Settings_object.objects.get(device_id=device_id)
+        rotate = setting_object.rotate
+        scale = setting_object.scale
+    except ObjectDoesNotExist:
+        rotate = 0.0
+        scale = 1.0
+
+    rotate = np.clip(rotate, -180.0, 180.0)
+    scale = np.clip(scale, 0.01, 5.0)
+
+    logging.debug('preprocessing image scale: %f', scale)
+    logging.debug('preprocessing image rotation: %f', rotate)
 
     name, ext = os.path.splitext(photo_filename)
     photo_preprocessed_filename = name + '_pre' + ext
     name, ext = os.path.splitext(thermal_filename)
     thermal_preprocessed_filename = name + '_pre' + ext
 
-    image = PImage.open(default_storage.open(photo_filename))
-    image = image.convert('RGB')
+    photo_image = PImage.open(default_storage.open(photo_filename))
+    photo_image = photo_image.convert('RGB')
+    photo_image = np.asarray(photo_image)
+    photo_image = cv2.cvtColor(photo_image, cv2.COLOR_RGB2BGR)
+    # photo_image = cv2.resize(photo_image, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+
+    rows, cols, c = photo_image.shape
+    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), rotate, scale)
+    # swab width and height if in certain rotation range
+    if (rotate > 45.0 and rotate < 135.0) or (rotate > -135.0 and rotate < -45.0):
+        photo_image = cv2.warpAffine(photo_image, M, (rows, cols))
+    else:
+        photo_image = cv2.warpAffine(photo_image, M, (cols, rows))
+
+    thermal_image = PImage.open(default_storage.open(thermal_filename))
+    thermal_image = thermal_image.convert('RGB')
+    thermal_image = np.asarray(thermal_image)
+    thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_RGB2BGR)
+    rows, cols, c = thermal_image.shape
+    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), rotate, scale)
+    # swab width and height if in certain rotation range
+    if (rotate > 45.0 and rotate < 135.0) or (rotate > -135.0 and rotate < -45.0):
+        thermal_image = cv2.warpAffine(thermal_image, M, (rows, cols))
+    else:
+        thermal_image = cv2.warpAffine(thermal_image, M, (cols, rows))
+
+    # save preprocessed images
+    cv2.imwrite(photo_preprocessed_filename, photo_image)
+    cv2.imwrite(thermal_preprocessed_filename, thermal_image)
+    # # TODO: convert back to pil image
+    # photo_image = cv2.cvtColor(photo_image, cv2.COLOR_BGR2RGB)
+    # photo_pil_im = PImage.fromarray(photo_image)
+    # thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_BGR2RGB)
+    # thermal_pil_im = PImage.fromarray(thermal_image)
+    # default_storage.save(photo_preprocessed_filename, photo_pil_im)
+    # default_storage.save(thermal_preprocessed_filename, thermal_pil_im)
 
     return (device_id, image_id)
 
@@ -39,7 +93,7 @@ def detect_faces(self, *args, **kwargs):
     image_id = kwargs.get("image_id")
 
     image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
-    filename = image_object.photo_filename
+    filename = image_object.photo_preprocessed_filename
 
     image = PImage.open(default_storage.open(filename))
     image = image.convert('RGB')
@@ -98,10 +152,10 @@ def form_bounding_boxes(self, *args, **kwargs):
     # get single record
     image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
 
-    photo_filename = image_object.photo_filename
+    photo_filename = image_object.photo_preprocessed_filename
     photo_output_filename = image_object.photo_output_filename
 
-    thermal_filename = image_object.thermal_filename
+    thermal_filename = image_object.thermal_preprocessed_filename
     thermal_output_filename = image_object.thermal_output_filename
 
     min_temperature = image_object.min_temperature
