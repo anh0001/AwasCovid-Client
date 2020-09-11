@@ -40,7 +40,7 @@ const email = value => (
     : undefined
 );
 
-class SettingForm extends React.Component {
+class GlobalSettingForm extends React.Component {
   saveRef = ref => {
     this.ref = ref;
     return this.ref;
@@ -80,7 +80,7 @@ class SettingForm extends React.Component {
             </div>
             <div>
               <Typography id="scale-image" gutterBottom>
-                Scale Image
+                Scale Images
               </Typography>
               <Field
                 name="scaleImage"
@@ -117,7 +117,7 @@ class SettingForm extends React.Component {
   }
 }
 
-SettingForm.propTypes = {
+GlobalSettingForm.propTypes = {
   classes: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
@@ -128,16 +128,16 @@ SettingForm.propTypes = {
 
 const reducerKey = 'dashboardReducer';
 
-const SettingFormRedux = reduxForm({
-  form: 'settingForm',
+const GlobalSettingFormRedux = reduxForm({
+  form: 'globalSettingForm',
   enableReinitialize: true,
-})(SettingForm);
+})(GlobalSettingForm);
 
-const SettingFormInit = connect(
+const GlobalSettingFormInit = connect(
   state => ({
-    initialValues: state.getIn([reducerKey, 'settingFormValues']),
+    initialValues: state.getIn([reducerKey, 'globalSettingFormValues']),
     ...state
   })
-)(SettingFormRedux);
+)(GlobalSettingFormRedux);
 
-export default withStyles(styles)(injectIntl(SettingFormInit));
+export default withStyles(styles)(injectIntl(GlobalSettingFormInit));

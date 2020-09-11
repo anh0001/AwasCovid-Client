@@ -6,11 +6,11 @@ import Fab from '@material-ui/core/Fab';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { injectIntl, intlShape } from 'react-intl';
 import messages from './messages';
-import SettingForm from './SettingForm';
+import GlobalSettingForm from './GlobalSettingForm';
 import FloatingPanel from '../Panel/FloatingPanel';
 import styles from './setting-jss';
 
-class Setting extends React.Component {
+class GlobalSetting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,13 +38,13 @@ class Setting extends React.Component {
     const branch = '';
     return (
       <div>
-        <Tooltip title={intl.formatMessage(messages.open_setting)}>
-          <Fab color="secondary" onClick={() => openSetting()} className={classes.addBtn}>
+        <Tooltip title={intl.formatMessage(messages.open_global_setting)}>
+          <Fab size="small" color="primary" onClick={() => openSetting()} className={classes.globalSettingBtn}>
             <SettingsIcon />
           </Fab>
         </Tooltip>
-        <FloatingPanel title={intl.formatMessage(messages.setting_parameters)} openForm={openForm} branch={branch} closeForm={closeForm}>
-          <SettingForm
+        <FloatingPanel title={intl.formatMessage(messages.global_setting_parameters)} openForm={openForm} branch={branch} closeForm={closeForm}>
+          <GlobalSettingForm
             onSubmit={this.sendValues}
           />
         </FloatingPanel>
@@ -53,7 +53,7 @@ class Setting extends React.Component {
   }
 }
 
-Setting.propTypes = {
+GlobalSetting.propTypes = {
   classes: PropTypes.object.isRequired,
   submit: PropTypes.func.isRequired,
   openSetting: PropTypes.func.isRequired,
@@ -62,8 +62,8 @@ Setting.propTypes = {
   intl: intlShape.isRequired
 };
 
-Setting.defaultProps = {
+GlobalSetting.defaultProps = {
   openForm: false
 };
 
-export default withStyles(styles)(injectIntl(Setting));
+export default withStyles(styles)(injectIntl(GlobalSetting));

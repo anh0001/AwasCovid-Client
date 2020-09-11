@@ -10,12 +10,14 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.http import HttpResponse, FileResponse, HttpResponseNotFound
 
-from api.tasks.image import detect_faces, detect_faces_callback
+from api.tasks.image import preprocessing_image, detect_faces, form_bounding_boxes
 from api.models.image import Image as Image_object
+from api.models.settings import Settings as Settings_object
 
 from celery import chain
 import magic
 
+from django.core.exceptions import ObjectDoesNotExist
 import logging
 
 # Create your views here.
@@ -72,8 +74,7 @@ class Image(APIView):
         name, ext = os.path.splitext(thermal_filename)
         thermal_output_filename = name + '_out' + ext
 
-        # Check if the image_id is already exist in the database
-
+        ### Check if the image_id is already exist in the database
         image_object = None
         try:
             image_object = Image_object.objects.filter(device_id=device_id).get(image_id=imageid)
@@ -107,8 +108,9 @@ class Image(APIView):
 
         # detect_faces.s(device_id=device_id, image_id=imageid).delay()
         chain(
+            preprocessing_image.s(device_id=device_id, image_id=imageid)|
             detect_faces.s(device_id=device_id, image_id=imageid)|
-            detect_faces_callback.s(device_id=device_id, image_id=imageid)
+            form_bounding_boxes.s(device_id=device_id, image_id=imageid)
         ).delay()
 
         return Response({"status":"ok"}, status=status.HTTP_202_ACCEPTED)
@@ -172,3 +174,58 @@ class Image(APIView):
 
             return response
         pass
+
+class Settings(APIView):
+
+    # example using POSTMAN: POST http://192.168.0.4:8000/api/image/
+    # and inside body add device_id, scale, and rotate
+    def post(self, request, *args, **kwargs):
+        device_id = request.POST.get('device_id')
+        scale = request.POST.get('scale')
+        rotate = request.POST.get('rotate')  # in degree
+        # logging.info('device-id: %s', device_id)
+        # logging.info('scale: %f', scale)
+        # logging.info('rotate: %f', rotate)
+
+        settings_object = None
+        try:
+            settings_object = Settings_object.objects.get(device_id=device_id)
+        except ObjectDoesNotExist:
+            settings_object = None
+
+        if settings_object:  # update the record in the database
+            settings_object.device_id = device_id
+            settings_object.scale = scale
+            settings_object.rotate = rotate
+            settings_object.save()
+        else:  # create a new record in the database
+            settings_object = Settings_object()
+            settings_object.device_id = device_id
+            settings_object.scale = scale
+            settings_object.rotate = rotate
+            settings_object.save()
+
+        #
+        settings_object = Settings_object.objects.get(device_id=device_id)
+        logging.info('device_id: %s', settings_object.device_id)
+        logging.info('rotate: %f', settings_object.rotate)
+        logging.info('scale: %f', settings_object.scale)
+
+        ### update the latest record
+        # sort descending from the latest to earliest date
+        response = None
+        try:
+            image_objects = Image_object.objects.filter(device_id=device_id).order_by('-date_created')
+            image_object = image_objects[0]
+
+
+
+            response = HttpResponse("Status OK", status.HTTP_200_OK)
+
+        except ObjectDoesNotExist:
+            image_object = None
+            response = HttpResponse("Record ObjectDoesNotExist", status.HTTP_200_OK)
+
+        return response
+
+    # def get(self, request):

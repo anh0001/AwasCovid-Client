@@ -40,6 +40,18 @@ const styles = theme => ({
     right: 30,
     zIndex: 100
   },
+  globalSettingBtn: {
+    position: 'fixed',
+    bottom: 30,
+    right: 30,
+    zIndex: 100
+  },
+  imageSettingBtn: {
+    position: 'fixed',
+    bottom: 80,
+    right: 30,
+    zIndex: 100
+  },
   fixHeight: {},
   appBar: {
     height: 'auto',

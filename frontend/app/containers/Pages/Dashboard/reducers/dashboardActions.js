@@ -15,10 +15,18 @@ export const getImageSuccessAction = payload => ({
     payload
 });
 
-export const openSettingAction = {
-    type: types.OPEN_SETTING,
+export const openGlobalSettingAction = {
+    type: types.OPEN_GLOBAL_SETTING,
 };
 
-export const closeSettingFormAction = {
-    type: types.CLOSE_SETTING_FORM,
+export const closeGlobalSettingFormAction = {
+    type: types.CLOSE_GLOBAL_SETTING_FORM,
+};
+
+export const openDeviceSettingAction = {
+    type: types.OPEN_DEVICE_SETTING,
+};
+
+export const closeDeviceSettingFormAction = {
+    type: types.CLOSE_DEVICE_SETTING_FORM,
 };

@@ -3,8 +3,10 @@ import { fromJS, List, Map } from 'immutable';
 import {
     GET_IMAGE,
     GET_IMAGE_SUCCESS,
-    OPEN_SETTING,
-    CLOSE_SETTING_FORM,
+    OPEN_GLOBAL_SETTING,
+    CLOSE_GLOBAL_SETTING_FORM,
+    OPEN_DEVICE_SETTING,
+    CLOSE_DEVICE_SETTING_FORM,
 } from './dashboardConstants';
 
 export const initialState = {
@@ -13,8 +15,10 @@ export const initialState = {
     message: null,
     imageURL: null,
     status: '',
-    settingFormValues: Map(),
-    openSettingForm: false,
+    globalSettingFormValues: Map(),
+    deviceSettingFormValues: Map(),
+    openGlobalSettingForm: false,
+    openDeviceSettingForm: false,
 };
 
 const initialImmutableState = fromJS(initialState);
@@ -39,18 +43,31 @@ export default function dashboardReducer(state = initialImmutableState, action =
                     .set('status', payload.get('status'));
             });
 
-        case OPEN_SETTING:
+        case OPEN_GLOBAL_SETTING:
             return state.withMutations((mutableState) => {
                 mutableState
-                    .set('settingFormValues', Map())
-                    .set('openSettingForm', true);
+                    .set('globalSettingFormValues', Map())
+                    .set('openGlobalSettingForm', true);
             });
 
-        case CLOSE_SETTING_FORM:
+        case CLOSE_GLOBAL_SETTING_FORM:
             return state.withMutations((mutableState) => {
                 mutableState
-                    .set('settingFormValues', Map())
-                    .set('openSettingForm', false);
+                    .set('globalSettingFormValues', Map())
+                    .set('openGlobalSettingForm', false);
+            });
+        case OPEN_DEVICE_SETTING:
+            return state.withMutations((mutableState) => {
+                mutableState
+                    .set('deviceSettingFormValues', Map())
+                    .set('openDeviceSettingForm', true);
+            });
+
+        case CLOSE_DEVICE_SETTING_FORM:
+            return state.withMutations((mutableState) => {
+                mutableState
+                    .set('deviceSettingFormValues', Map())
+                    .set('openDeviceSettingForm', false);
             });
 
         default:

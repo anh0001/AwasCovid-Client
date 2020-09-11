@@ -16,13 +16,25 @@ export default defineMessages({
     id: `${scope}.contacts`,
     defaultMessage: 'Contacts',
   },
-  open_setting: {
-    id: `${scope}.open_setting`,
-    defaultMessage: 'Open Setting',
+  open_global_setting: {
+    id: `${scope}.open_global_setting`,
+    defaultMessage: 'Global Setting',
   },
-  setting_parameters: {
-    id: `${scope}.setting_parameters`,
-    defaultMessage: 'Setting Parameters',
+  open_device_setting: {
+    id: `${scope}.open_device_setting`,
+    defaultMessage: 'Device Setting',
+  },
+  global_setting_parameters: {
+    id: `${scope}.global_setting_parameters`,
+    defaultMessage: 'Global Parameters',
+  },
+  device_setting_parameters: {
+    id: `${scope}.device_setting_parameters`,
+    defaultMessage: 'Device Settings',
+  },
+  device_id: {
+    id: `${scope}.device_id`,
+    defaultMessage: 'Device Id',
   },
   all: {
     id: `${scope}.all`,

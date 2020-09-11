@@ -12,6 +12,26 @@ from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import logging
 
+@app.task(bind=True, name='preprocessing_image')
+def preprocessing_image(self, *args, **kwargs):
+    device_id = kwargs.get("device_id")
+    image_id = kwargs.get("image_id")
+
+    image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
+    photo_filename = image_object.photo_filename
+    thermal_filename = image_object.thermal_filename
+
+    name, ext = os.path.splitext(photo_filename)
+    photo_preprocessed_filename = name + '_pre' + ext
+    name, ext = os.path.splitext(thermal_filename)
+    thermal_preprocessed_filename = name + '_pre' + ext
+
+    image = PImage.open(default_storage.open(photo_filename))
+    image = image.convert('RGB')
+
+    return (device_id, image_id)
+
+
 @app.task(bind=True, name='detect_faces')
 def detect_faces(self, *args, **kwargs):
 
@@ -70,8 +90,8 @@ def detect_faces(self, *args, **kwargs):
     return detected_faces
 
 
-@app.task(bind=True, name='detect_faces_callback')
-def detect_faces_callback(self, *args, **kwargs):
+@app.task(bind=True, name='form_bounding_boxes')
+def form_bounding_boxes(self, *args, **kwargs):
     device_id = kwargs.get("device_id")
     image_id = kwargs.get("image_id")
 

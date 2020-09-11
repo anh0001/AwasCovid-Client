@@ -11,14 +11,17 @@ import saga from './reducers/dashboardSagas';
 
 import {
   getImageAction,
-  openSettingAction,
-  closeSettingFormAction,
+  openGlobalSettingAction,
+  closeGlobalSettingFormAction,
+  openDeviceSettingAction,
+  closeDeviceSettingFormAction,
 } from './reducers/dashboardActions';
 
 import brand from 'enl-api/dummy/brand';
 import {
   PapperBlock,
-  Setting,
+  GlobalSetting,
+  DeviceSetting,
   ImageCard,
 } from 'enl-components';
 import CompossedLineBarArea from './CompossedLineBarArea';
@@ -105,7 +108,7 @@ class BasicTable extends Component {
   //   }
   // }
 
-  saveSetting = (items) => {
+  saveGlobalSetting = (items) => {
     const values = items.toJS();
     // console.log('items: ', values);
     if (!values) {
@@ -115,7 +118,14 @@ class BasicTable extends Component {
     } else {
       this.setState({ imageType: 'photo', scaleImage: values.scaleImage });
     }
-    this.props.closeSettingFormHandler();
+    this.props.closeGlobalSettingFormHandler();
+  }
+
+  saveDeviceSetting = (items) => {
+    const values = items.toJS();
+    console.log('items: ', values);
+    
+    this.props.closeDeviceSettingFormHandler();
   }
 
   render() {
@@ -126,9 +136,12 @@ class BasicTable extends Component {
       scaleImage,
     } = this.state;
     const {
-      openSettingHandler,
-      openSettingForm,
-      closeSettingFormHandler,
+      openGlobalSettingHandler,
+      openGlobalSettingForm,
+      closeGlobalSettingFormHandler,
+      openDeviceSettingHandler,
+      openDeviceSettingForm,
+      closeDeviceSettingFormHandler,
     } = this.props;
 
     // console.log('status: ', status)
@@ -179,11 +192,17 @@ class BasicTable extends Component {
             <StrippedTable />
           </div>
         </PapperBlock> */}
-        <Setting
-          openSetting={openSettingHandler}
-          openForm={openSettingForm}
-          closeForm={closeSettingFormHandler}
-          submit={this.saveSetting}
+        <GlobalSetting
+          openSetting={openGlobalSettingHandler}
+          openForm={openGlobalSettingForm}
+          closeForm={closeGlobalSettingFormHandler}
+          submit={this.saveGlobalSetting}
+        />
+        <DeviceSetting
+          openSetting={openDeviceSettingHandler}
+          openForm={openDeviceSettingForm}
+          closeForm={closeDeviceSettingFormHandler}
+          submit={this.saveDeviceSetting}
         />
       </div>
     );
@@ -193,15 +212,19 @@ class BasicTable extends Component {
 BasicTable.propTypes = {
   getImageHandler: PropTypes.func.isRequired,
   imageURL: PropTypes.object,
-  openSettingHandler: PropTypes.func.isRequired,
-  openSettingForm: PropTypes.bool.isRequired,
-  closeSettingFormHandler: PropTypes.func.isRequired,
+  openGlobalSettingHandler: PropTypes.func.isRequired,
+  openGlobalSettingForm: PropTypes.bool.isRequired,
+  closeGlobalSettingFormHandler: PropTypes.func.isRequired,
+  openDeviceSettingHandler: PropTypes.func.isRequired,
+  openDeviceSettingForm: PropTypes.bool.isRequired,
+  closeDeviceSettingFormHandler: PropTypes.func.isRequired,
   status: PropTypes.string,
 };
 
 BasicTable.defaultProps = {
   imageURL: null,
-  openSettingForm: false,
+  openGlobalSettingForm: false,
+  openDeviceSettingForm: false,
   status: '',
 };
 
@@ -210,15 +233,18 @@ const sagaKey = reducerKey;
 
 const mapStateToProps = state => ({
   imageURL: state.getIn([reducerKey, 'imageURL']),
-  openSettingForm: state.getIn([reducerKey, 'openSettingForm']),
+  openGlobalSettingForm: state.getIn([reducerKey, 'openGlobalSettingForm']),
+  openDeviceSettingForm: state.getIn([reducerKey, 'openDeviceSettingForm']),
   status: state.getIn([reducerKey, 'status']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   getImageHandler: bindActionCreators(getImageAction, dispatch),
-  openSettingHandler: () => dispatch(openSettingAction),
-  closeSettingFormHandler: () => dispatch(closeSettingFormAction),
+  openGlobalSettingHandler: () => dispatch(openGlobalSettingAction),
+  closeGlobalSettingFormHandler: () => dispatch(closeGlobalSettingFormAction),
+  openDeviceSettingHandler: () => dispatch(openDeviceSettingAction),
+  closeDeviceSettingFormHandler: () => dispatch(closeDeviceSettingFormAction),
 });
 
 const withReducer = injectReducer({ key: reducerKey, reducer });
