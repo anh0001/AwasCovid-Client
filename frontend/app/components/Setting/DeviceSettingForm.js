@@ -15,6 +15,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormLabel from '@material-ui/core/FormLabel';
 import PermContactCalendar from '@material-ui/icons/PermContactCalendar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import MenuItem from '@material-ui/core/MenuItem';
 import Bookmark from '@material-ui/icons/Bookmark';
 import LocalPhone from '@material-ui/icons/LocalPhone';
 import Email from '@material-ui/icons/Email';
@@ -29,6 +30,7 @@ import {
   Switch as SwitchRedux,
   Slider as SliderRedux,
   TextField as TextFieldRedux,
+  Select as SelectRedux,
 } from 'redux-form-material-ui-adapter';
 import messages from './messages';
 import styles from './setting-jss';
@@ -81,10 +83,25 @@ class DeviceSettingForm extends React.Component {
             </div>
             <div>
               <Typography id="rotate-image" gutterBottom>
-                Rotate Device Image
+                Rotate Image
               </Typography>
               <Field
                 name="rotateImage"
+                component={SelectRedux}
+                placeholder="Rotate Image"
+              >
+                <MenuItem value="0">0</MenuItem>
+                <MenuItem value="90">90</MenuItem>
+                <MenuItem value="-90">-90</MenuItem>
+                <MenuItem value="180">180</MenuItem>
+              </Field>
+            </div>
+            <div>
+              <Typography id="rotate-image" gutterBottom>
+                Offset Rotation
+              </Typography>
+              <Field
+                name="offsetRotateImage"
                 component={SliderRedux}
                 defaultValue={0}
                 aria-labelledby="discrete-slider"
@@ -97,7 +114,7 @@ class DeviceSettingForm extends React.Component {
             </div>
             <div>
               <Typography id="scale-image" gutterBottom>
-                Scale Device Image
+                Scale
               </Typography>
               <Field
                 name="scaleImage"

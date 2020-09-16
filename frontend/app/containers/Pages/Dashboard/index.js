@@ -137,9 +137,14 @@ class BasicTable extends Component {
         formData.append('scale', '1.0');
 
       if (values.rotateImage)
-        formData.append('rotate', values.rotateImage.toString());
+        formData.append('rotate', values.rotateImage);  // Already a string
       else
-        formData.append('rotate', '0.0');
+        formData.append('rotate', '0');
+
+      if (values.offsetRotateImage)
+        formData.append('offsetRotate', values.offsetRotateImage.toString());
+      else
+        formData.append('offsetRotate', '0.0');
 
       axios.post('http://localhost:8000/api/settings/', formData, {
         headers: {

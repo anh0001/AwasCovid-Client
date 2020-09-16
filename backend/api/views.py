@@ -188,10 +188,12 @@ class Settings(APIView):
     def post(self, request, *args, **kwargs):
         device_id = request.POST.get('device_id')
         scale = float(request.POST.get('scale'))
-        rotate = float(request.POST.get('rotate'))  # in degree
+        rotate = int(request.POST.get('rotate'))  # in degree
+        offsetRotate = float(request.POST.get('offsetRotate'))  # in degree
         # logging.info('device-id: %s', device_id)
         # logging.info('scale: %f', scale)
         # logging.info('rotate: %f', rotate)
+        # logging.info('offsetRotate: %f', offsetRotate)
 
         settings_object = None
         try:
@@ -203,12 +205,14 @@ class Settings(APIView):
             settings_object.device_id = device_id
             settings_object.scale = scale
             settings_object.rotate = rotate
+            settings_object.offsetRotate = offsetRotate
             settings_object.save()
         else:  # create a new record in the database
             settings_object = Settings_object()
             settings_object.device_id = device_id
             settings_object.scale = scale
             settings_object.rotate = rotate
+            settings_object.offsetRotate = offsetRotate
             settings_object.save()
 
         #
@@ -216,6 +220,7 @@ class Settings(APIView):
         # logging.info('device_id: %s', settings_object.device_id)
         # logging.info('rotate: %f', settings_object.rotate)
         # logging.info('scale: %f', settings_object.scale)
+        # logging.info('offsetRotate: %f', settings_object.offsetRotate)
 
         ### update the latest record
         # sort descending from the latest to earliest date

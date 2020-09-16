@@ -25,21 +25,26 @@ def preprocessing_image(self, *args, **kwargs):
     photo_preprocessed_filename = image_object.photo_preprocessed_filename
     thermal_preprocessed_filename = image_object.thermal_preprocessed_filename
 
-    rotate = 0.0
+    rotate = 0
+    offsetRotate = 0.0
     scale = 1.0
     try:
         setting_object = Settings_object.objects.get(device_id=device_id)
         rotate = setting_object.rotate
+        offsetRotate = setting_object.offsetRotate
         scale = setting_object.scale
     except ObjectDoesNotExist:
-        rotate = 0.0
+        rotate = 0
+        offsetRotate = 0.0
         scale = 1.0
 
-    rotate = np.clip(rotate, -180.0, 180.0)
+    rotate = np.clip(rotate, -180, 180)
+    offsetRotate = np.clip(offsetRotate, -180.0, 180.0)
     scale = np.clip(scale, 0.01, 5.0)
 
-    logging.debug('preprocessing image scale: %f', scale)
-    logging.debug('preprocessing image rotation: %f', rotate)
+    # logging.debug('preprocessing image scale: %f', scale)
+    # logging.debug('preprocessing image rotation: %d', rotate)
+    # logging.debug('preprocessing image offset rotation: %f', offsetRotate)
 
     name, ext = os.path.splitext(photo_filename)
     photo_preprocessed_filename = name + '_pre' + ext
@@ -52,10 +57,18 @@ def preprocessing_image(self, *args, **kwargs):
     photo_image = cv2.cvtColor(photo_image, cv2.COLOR_RGB2BGR)
     # photo_image = cv2.resize(photo_image, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
 
+    ## Perform photo image rotation
+    if rotate == 90:
+        photo_image = cv2.rotate(photo_image, cv2.ROTATE_90_CLOCKWISE)
+    elif rotate == -90:
+        photo_image = cv2.rotate(photo_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    elif rotate == 180 or rotate == -180:
+        photo_image = cv2.rotate(photo_image, cv2.cv2.ROTATE_180)
+
     rows, cols, c = photo_image.shape
-    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), rotate, scale)
+    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), offsetRotate, scale)
     # swab width and height if in certain rotation range
-    if (rotate > 45.0 and rotate < 135.0) or (rotate > -135.0 and rotate < -45.0):
+    if (offsetRotate > 45.0 and offsetRotate < 135.0) or (offsetRotate > -135.0 and offsetRotate < -45.0):
         photo_image = cv2.warpAffine(photo_image, M, (rows, cols))
     else:
         photo_image = cv2.warpAffine(photo_image, M, (cols, rows))
@@ -64,10 +77,19 @@ def preprocessing_image(self, *args, **kwargs):
     thermal_image = thermal_image.convert('RGB')
     thermal_image = np.asarray(thermal_image)
     thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_RGB2BGR)
+
+    ## Perform thermal image rotation
+    if rotate == 90:
+        thermal_image = cv2.rotate(thermal_image, cv2.ROTATE_90_CLOCKWISE)
+    elif rotate == -90:
+        thermal_image = cv2.rotate(thermal_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    elif rotate == 180 or rotate == -180:
+        thermal_image = cv2.rotate(thermal_image, cv2.cv2.ROTATE_180)
+
     rows, cols, c = thermal_image.shape
-    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), rotate, scale)
+    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), offsetRotate, scale)
     # swab width and height if in certain rotation range
-    if (rotate > 45.0 and rotate < 135.0) or (rotate > -135.0 and rotate < -45.0):
+    if (offsetRotate > 45.0 and offsetRotate < 135.0) or (offsetRotate > -135.0 and offsetRotate < -45.0):
         thermal_image = cv2.warpAffine(thermal_image, M, (rows, cols))
     else:
         thermal_image = cv2.warpAffine(thermal_image, M, (cols, rows))
