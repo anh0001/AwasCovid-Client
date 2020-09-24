@@ -146,6 +146,11 @@ class BasicTable extends Component {
       else
         formData.append('offsetRotate', '0.0');
 
+      if (values.offsetValue)
+        formData.append('offsetValue', values.offsetValue.toString());
+      else
+        formData.append('offsetValue', '0.0');
+
       axios.post('http://localhost:8000/api/settings/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'

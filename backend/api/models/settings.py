@@ -7,3 +7,4 @@ class Settings(models.Model):
     scale = models.FloatField(default=1.0)  # default is no image scaling
     rotate = models.IntegerField(default=0) # in degree
     offsetRotate = models.FloatField(default=0.0)  # in degree
+    offsetValue = models.FloatField(default=0.0)  # offset measurement in celcius

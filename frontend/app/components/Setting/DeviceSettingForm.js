@@ -128,6 +128,22 @@ class DeviceSettingForm extends React.Component {
                 step={0.01}
               />
             </div>
+            <div>
+              <Typography id="offset-value" gutterBottom>
+                Offset Value (Celcius)
+              </Typography>
+              <Field
+                name="offsetValue"
+                component={SliderRedux}
+                defaultValue={0.0}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                // format={null}
+                min={-2.00}
+                max={2.00}
+                step={0.01}
+              />
+            </div>
           </section>
 
           <div className={css.buttonArea}>

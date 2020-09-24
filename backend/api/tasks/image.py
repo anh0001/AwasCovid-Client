@@ -183,7 +183,17 @@ def form_bounding_boxes(self, *args, **kwargs):
     min_temperature = image_object.min_temperature
     max_temperature = image_object.max_temperature
 
-    # delete file if exist
+    ### Get offset value from database
+    offsetValue = 0.0
+    try:
+        setting_object = Settings_object.objects.get(device_id=device_id)
+        offsetValue = setting_object.offsetValue
+    except ObjectDoesNotExist:
+        offsetValue = 0.0
+
+    offsetValue = np.clip(offsetValue, -10.0, 10.0)
+
+    ### delete file if exist
     if os.path.exists(photo_output_filename):
         os.remove(photo_output_filename)
     if os.path.exists(thermal_output_filename):
@@ -239,6 +249,7 @@ def form_bounding_boxes(self, *args, **kwargs):
         center_y = y1 + int((y2-y1)/2)
         average_temp = thermal_image[center_y, center_x, 0]
         average_temp = min_temperature + average_temp * (max_temperature-min_temperature) / 255.0
+        average_temp = average_temp + offsetValue  # add offset value in Celcius
 
         faces_dict['faces'].append({
             "box": face.box,

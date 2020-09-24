@@ -190,6 +190,7 @@ class Settings(APIView):
         scale = float(request.POST.get('scale'))
         rotate = int(request.POST.get('rotate'))  # in degree
         offsetRotate = float(request.POST.get('offsetRotate'))  # in degree
+        offsetValue = float(request.POST.get('offsetValue'))  # in Celcius
         # logging.info('device-id: %s', device_id)
         # logging.info('scale: %f', scale)
         # logging.info('rotate: %f', rotate)
@@ -206,6 +207,7 @@ class Settings(APIView):
             settings_object.scale = scale
             settings_object.rotate = rotate
             settings_object.offsetRotate = offsetRotate
+            settings_object.offsetValue = offsetValue
             settings_object.save()
         else:  # create a new record in the database
             settings_object = Settings_object()
@@ -213,6 +215,7 @@ class Settings(APIView):
             settings_object.scale = scale
             settings_object.rotate = rotate
             settings_object.offsetRotate = offsetRotate
+            settings_object.offsetValue = offsetValue
             settings_object.save()
 
         #
