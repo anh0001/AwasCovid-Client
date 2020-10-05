@@ -151,6 +151,11 @@ class BasicTable extends Component {
       else
         formData.append('offsetValue', '0.0');
 
+      if (values.autoSaveToCloud)
+        formData.append('autoSaveToCloud', values.autoSaveToCloud);
+      else
+        formData.append('autoSaveToCloud', false);
+
       axios.post('http://localhost:8000/api/settings/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'

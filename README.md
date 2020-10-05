@@ -50,6 +50,15 @@ This repo is based on Django React Boilerplate.
   make compile_install_requirements
   ```
 
+  In Windows 10, run `pip-compile requirements.in` and copy paste the terminal output to the `requirements.txt`. Repeat for `dev-requirements.in` and save it to `dev-requirements.txt`.
+
+  Then run
+
+  ```bash
+  pip install -r requirements.txt
+  pip install -r dev-requirements.txt
+  ```
+
 - Inside the `backend` folder, do the following:
 
   Create a copy of ``awascovid/settings/local.py.example``:  

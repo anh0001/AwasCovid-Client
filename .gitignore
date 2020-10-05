@@ -48,3 +48,6 @@ spritesmith.scss
 
 # templated email
 tmp_email/
+
+# firebase
+/backend/awascovid-firebase-adminsdk-*.json

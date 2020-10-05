@@ -130,7 +130,7 @@ class Image(APIView):
             if request.GET.get("image_type"):
                 image_type = request.GET.get("image_type")  # image type: photo or thermal
 
-            logging.info('image_type: %s', image_type)
+            # logging.info('image_type: %s', image_type)
 
             # sort descending from the latest to earliest date
             image_object = Image_object.objects.filter(device_id=device_id).order_by('-date_created')

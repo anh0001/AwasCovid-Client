@@ -8,3 +8,4 @@ class Settings(models.Model):
     rotate = models.IntegerField(default=0) # in degree
     offsetRotate = models.FloatField(default=0.0)  # in degree
     offsetValue = models.FloatField(default=0.0)  # offset measurement in celcius
+    autoSaveToCloud = models.BooleanField(default=False)  # auto save when covid is detected

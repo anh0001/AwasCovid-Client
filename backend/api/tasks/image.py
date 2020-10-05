@@ -313,3 +313,152 @@ def form_bounding_boxes(self, *args, **kwargs):
     #     pass
 
     return (device_id, image_id)
+
+
+@app.task(bind=True, name='upload2Cloud')
+def upload2Cloud(self, *args, **kwargs):
+    device_id = kwargs.get("device_id")
+    image_id = kwargs.get("image_id")
+
+    # # get single record
+    # image_object = Image_object.objects.filter(device_id=device_id).get(image_id=image_id)
+    #
+    # photo_filename = image_object.photo_preprocessed_filename
+    # photo_output_filename = image_object.photo_output_filename
+    #
+    # thermal_filename = image_object.thermal_preprocessed_filename
+    # thermal_output_filename = image_object.thermal_output_filename
+    #
+    # min_temperature = image_object.min_temperature
+    # max_temperature = image_object.max_temperature
+    #
+    # ### Get offset value from database
+    # autoSaveToCloud = False
+    # try:
+    #     setting_object = Settings_object.objects.get(device_id=device_id)
+    #     autoSaveToCloud = setting_object.autoSaveToCloud
+    # except ObjectDoesNotExist:
+    #     autoSaveToCloud = False
+    #
+    # offsetValue = np.clip(offsetValue, -10.0, 10.0)
+    #
+    # ### delete file if exist
+    # if os.path.exists(photo_output_filename):
+    #     os.remove(photo_output_filename)
+    # if os.path.exists(thermal_output_filename):
+    #     os.remove(thermal_output_filename)
+    #
+    # faces_on_image = Face_object.objects.filter(device_id=device_id).filter(image_id=image_id)
+    #
+    # photo_image = PImage.open(default_storage.open(photo_filename))
+    # thermal_image = PImage.open(default_storage.open(thermal_filename))
+    # photo_image = photo_image.convert('RGB')
+    # thermal_image = thermal_image.convert('RGB')
+    # # Read the input image
+    # photo_image = np.asarray(photo_image)
+    # thermal_image = np.asarray(thermal_image)
+    # # NOTE: OpenCV follows BGR convention and PIL follows RGB color convention
+    # photo_image = cv2.cvtColor(photo_image, cv2.COLOR_RGB2BGR)
+    # photo_image = photo_image.copy()
+    # thermal_image = cv2.cvtColor(thermal_image, cv2.COLOR_RGB2BGR)
+    # colormap_thermal_image = thermal_image.copy()
+    # # apply colormap
+    # cv2.applyColorMap(colormap_thermal_image, cv2.COLORMAP_MAGMA, colormap_thermal_image)
+    #
+    # height_ratio = thermal_image.shape[0] / photo_image.shape[0]
+    # width_ratio = thermal_image.shape[1] / photo_image.shape[1]
+    #
+    # # logging.info('height ratio', height_ratio)
+    # # logging.info('width ratio', width_ratio)
+    #
+    # faces_dict = {
+    #     'faces' : list(),
+    #     'status' : 'normal',
+    # }
+    # for face in faces_on_image:
+    #
+    #     box = json.loads(face.box)
+    #
+    #     # get thermal bounding boxes
+    #     x1, y1, width, height = box
+    #     x1, y1 = abs(x1), abs(y1)
+    #     x2, y2 = x1 + width, y1 + height
+    #     x1 = int(x1 * width_ratio)
+    #     x2 = int(x2 * width_ratio)
+    #     y1 = int(y1 * height_ratio)
+    #     y2 = int(y2 * height_ratio)
+    #
+    #     # calculate temperature based on averaging
+    #     # roi_im = thermal_image[y1:y2, x1:x2, 0]
+    #     # average_temp = np.sum(roi_im) / cv2.countNonZero(roi_im)
+    #     # average_temp = average_temp * 0.2764  # scale factor
+    #
+    #     # calculate temperature based on center position and scaling with min-max temperature
+    #     center_x = x1 + int((x2-x1)/2)
+    #     center_y = y1 + int((y2-y1)/2)
+    #     average_temp = thermal_image[center_y, center_x, 0]
+    #     average_temp = min_temperature + average_temp * (max_temperature-min_temperature) / 255.0
+    #     average_temp = average_temp + offsetValue  # add offset value in Celcius
+    #
+    #     faces_dict['faces'].append({
+    #         "box": face.box,
+    #         "temperature": round(average_temp, 2),
+    #     })
+    #
+    #     if average_temp > 37.0:
+    #         image_object.covid_detected = True
+    #         faces_dict['status'] = 'covid detected'
+    #
+    #     cv2.rectangle(colormap_thermal_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
+    #     cv2.putText(colormap_thermal_image,
+    #                 "{0:.2f}C".format(float(average_temp)),
+    #                 (x1, (y2 + 25)),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
+    #
+    #     x1, y1, width, height = box
+    #     x1, y1 = abs(x1), abs(y1)
+    #     x2, y2 = x1 + width, y1 + height
+    #     cv2.rectangle(photo_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
+    #     cv2.putText(photo_image,
+    #                 "{0:.2f}".format(float(average_temp)),
+    #                 (x1, (y2 + 25)),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+    #
+    #
+    # # convert back to pil image
+    # photo_image = cv2.cvtColor(photo_image, cv2.COLOR_BGR2RGB)
+    # photo_pil_im = PImage.fromarray(photo_image)
+    # colormap_thermal_image = cv2.cvtColor(colormap_thermal_image, cv2.COLOR_BGR2RGB)
+    # thermal_pil_im = PImage.fromarray(colormap_thermal_image)
+    #
+    # photo_silver_bullet = io.BytesIO()
+    # thermal_silver_bullet = io.BytesIO()
+    # photo_pil_im.save(photo_silver_bullet, format="JPEG")
+    # thermal_pil_im.save(thermal_silver_bullet, format="JPEG")
+    #
+    # photo_image_file = InMemoryUploadedFile(photo_silver_bullet, None, photo_output_filename, 'image/jpeg',
+    #                                   len(photo_silver_bullet.getvalue()), None)
+    # thermal_image_file = InMemoryUploadedFile(thermal_silver_bullet, None, thermal_output_filename, 'image/jpeg',
+    #                                   len(thermal_silver_bullet.getvalue()), None)
+    #
+    # default_storage.save(photo_output_filename, photo_image_file)
+    # default_storage.save(thermal_output_filename, thermal_image_file)
+    #
+    # # callback = dict({
+    # #     "device_id":device_id,
+    # #     "image_id":image_id,
+    # #     "request_id":image_object.request_id,
+    # #     "faces":faces_dict,
+    # #     "output_image_url":"{host}/api/image/?image_id={image_id}".format(host=settings.API_HOST, image_id=image_id)
+    # # })
+    #
+    # image_object.status = json.dumps(faces_dict)
+    # image_object.save()
+    #
+    # # try:
+    # #     requests.post(url=image_object.callback_url, data=json.dumps(callback))
+    # # except Exception as e:
+    # #     # log exception
+    # #     pass
+
+    return (device_id, image_id)
