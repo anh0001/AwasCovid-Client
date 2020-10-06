@@ -51,3 +51,4 @@ tmp_email/
 
 # firebase
 /backend/awascovid-firebase-adminsdk-*.json
+.__atomic*

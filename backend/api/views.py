@@ -10,7 +10,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.http import HttpResponse, FileResponse, HttpResponseNotFound
 
-from api.tasks.image import preprocessing_image, detect_faces, form_bounding_boxes
+from api.tasks.image import preprocessing_image, detect_faces, form_bounding_boxes, imageUploadTask
 from api.models.image import Image as Image_object
 from api.models.settings import Settings as Settings_object
 
@@ -248,3 +248,15 @@ class Settings(APIView):
         return response
 
     # def get(self, request):
+
+class ImageUpload(APIView):
+
+    # example using POSTMAN: POST http://192.168.0.4:8000/api/ImageUpload/
+    def post(self, request, *args, **kwargs):
+        user_id = request.POST.get('user_id')
+        device_id = request.POST.get('device_id')
+        image_id = request.POST.get('image_id')
+
+        imageUploadTask.s(user_id=user_id, device_id=device_id, image_id=image_id).delay()
+
+        return HttpResponse("Status OK", status.HTTP_200_OK)
