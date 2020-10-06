@@ -232,6 +232,9 @@ def form_bounding_boxes(self, *args, **kwargs):
 
     faces_dict = {
         'faces' : list(),
+        'user_id' : '',
+        'device_id': device_id,
+        'image_id': image_id,
         'status' : 'normal',
     }
     for face in faces_on_image:
@@ -349,8 +352,7 @@ def imageUploadTask(self, *args, **kwargs):
 
         # save to firebase database
         db = firestore.client()
-        doc_ref = db.collection(u'images').document(user_id)
-        doc_ref.set({
+        data_dict = {
             u'user_id': user_id,
             u'device_id': device_id,
             u'image_id': image_id,
@@ -360,7 +362,8 @@ def imageUploadTask(self, *args, **kwargs):
             u'covid_detected': covid_detected,
             u'status': status,
             u'date_created': date_created,
-        })
+        }
+        db.collection(u'images').add(data_dict)
 
     except ObjectDoesNotExist:
         logging.error('upload2Cloud ObjectDoesNotExist')

@@ -30,3 +30,10 @@ export const openDeviceSettingAction = {
 export const closeDeviceSettingFormAction = {
     type: types.CLOSE_DEVICE_SETTING_FORM,
 };
+
+export const uploadDetectedImage2FirebaseAction = (userId, deviceId, imageId) => ({
+    type: types.UPLOAD_DETECTED_IMAGE_TO_FIREBASE,
+    userId,
+    deviceId,
+    imageId,
+});

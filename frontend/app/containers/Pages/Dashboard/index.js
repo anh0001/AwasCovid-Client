@@ -17,6 +17,7 @@ import {
   closeGlobalSettingFormAction,
   openDeviceSettingAction,
   closeDeviceSettingFormAction,
+  uploadDetectedImage2FirebaseAction,
 } from './reducers/dashboardActions';
 
 import brand from 'enl-api/dummy/brand';
@@ -45,7 +46,7 @@ class BasicTable extends Component {
     };
   }
 
-  tick() {
+  getImageTick() {
     this.props.getImageHandler('0001', this.state.imageType);  // devide id 0001
 
     // this.setState(state => ({
@@ -53,8 +54,24 @@ class BasicTable extends Component {
     // }));
   }
 
+  detectedImageUploadTick() {
+    const {
+      status,
+    } = this.state;
+
+    // if (status.status !== 'normal')  // covid is detected
+    {
+      // console.log('detectedImageUploadTick is uploading...');
+      const user_id = 'anhrisn';
+      const device_id = status.device_id;
+      const image_id = status.image_id;
+      this.props.uploadDetectedImage2FirebaseHandler(user_id, device_id, image_id);
+    }
+  }
+
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 1750);
+    this.getImageTimerId = setInterval(() => this.getImageTick(), 1750);
+    this.detectedImageUploadTimerId = setInterval(() => this.detectedImageUploadTick(), 10000);
   }
 
   componentDidUpdate(prevProps) {
@@ -82,7 +99,8 @@ class BasicTable extends Component {
   };
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.getImageTimerId);
+    clearInterval(this.detectedImageUploadTimerId);
   }
 
   // readFileAsync(blob) {
@@ -249,6 +267,7 @@ class BasicTable extends Component {
 
 BasicTable.propTypes = {
   getImageHandler: PropTypes.func.isRequired,
+  uploadDetectedImage2FirebaseHandler: PropTypes.func.isRequired,
   imageURL: PropTypes.object,
   openGlobalSettingHandler: PropTypes.func.isRequired,
   openGlobalSettingForm: PropTypes.bool.isRequired,
@@ -279,6 +298,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getImageHandler: bindActionCreators(getImageAction, dispatch),
+  uploadDetectedImage2FirebaseHandler: bindActionCreators(uploadDetectedImage2FirebaseAction, dispatch),
   openGlobalSettingHandler: () => dispatch(openGlobalSettingAction),
   closeGlobalSettingFormHandler: () => dispatch(closeGlobalSettingFormAction),
   openDeviceSettingHandler: () => dispatch(openDeviceSettingAction),
