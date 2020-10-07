@@ -4,6 +4,8 @@ This repo is based on Django React Boilerplate.
 
 ## Troubleshooting:
 
+- Set the firebase bucket storage to public https://cloud.google.com/storage/docs/access-control/making-data-public. So that other users able to see the images.
+
 ### Frontend (Tested in Windows 10 and WSL Ubuntu 20.04)
 
 - ```bash

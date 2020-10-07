@@ -354,6 +354,7 @@ def imageUploadTask(self, *args, **kwargs):
         db = firestore.client()
         data_dict = {
             u'user_id': user_id,
+            u'username': user_id,  #TODO: Use the correct username
             u'device_id': device_id,
             u'image_id': image_id,
             u'min_temperature': min_temperature,

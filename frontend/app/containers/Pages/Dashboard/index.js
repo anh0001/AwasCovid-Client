@@ -59,7 +59,7 @@ class BasicTable extends Component {
       status,
     } = this.state;
 
-    // if (status.status !== 'normal')  // covid is detected
+    if (status.status !== 'normal')  // covid is detected
     {
       // console.log('detectedImageUploadTick is uploading...');
       const user_id = 'anhrisn';
