@@ -139,18 +139,10 @@ class DeviceSettingForm extends React.Component {
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 // format={null}
-                min={-2.00}
-                max={2.00}
-                step={0.01}
+                min={-5.00}
+                max={5.00}
+                step={0.05}
               />
-            </div>
-            <div>
-              
-                <Typography id="auto-save-cloud" gutterBottom>
-                  Auto Save to Cloud
-                </Typography>
-                <Field name="autoSaveToCloud" component={SwitchRedux} />
-              
             </div>
           </section>
 

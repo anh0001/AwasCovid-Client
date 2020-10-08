@@ -9,6 +9,7 @@ import { Helmet } from 'react-helmet';
 import reducer from './reducers/dashboardReducers';
 import saga from './reducers/dashboardSagas';
 
+import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 
 import {
@@ -42,6 +43,7 @@ class BasicTable extends Component {
       imageURL: null,
       imageType: 'photo',
       scaleImage: 6,
+      autoSaveToCloud: false,
       status: null,
     };
   }
@@ -57,15 +59,16 @@ class BasicTable extends Component {
   detectedImageUploadTick() {
     const {
       status,
+      autoSaveToCloud,
     } = this.state;
 
-    if (status.status !== 'normal')  // covid is detected
+    if (status && status.status !== 'normal' && autoSaveToCloud)  // covid is detected
     {
-      // console.log('detectedImageUploadTick is uploading...');
-      const user_id = 'anhrisn';
+      console.log('detectedImageUploadTick (covid is detected): Uploading images to cloud...');
+      const username = 'anhrisn';
       const device_id = status.device_id;
       const image_id = status.image_id;
-      this.props.uploadDetectedImage2FirebaseHandler(user_id, device_id, image_id);
+      this.props.uploadDetectedImage2FirebaseHandler(username, device_id, image_id);
     }
   }
 
@@ -132,11 +135,11 @@ class BasicTable extends Component {
     const values = items.toJS();
     // console.log('items: ', values);
     if (!values) {
-      this.setState({ imageType: 'photo', scaleImage: values.scaleImage });
+      this.setState({ imageType: 'photo', scaleImage: values.scaleImage, autoSaveToCloud: values.autoSaveToCloud });
     } else if (values.photoOrThermal) {
-      this.setState({ imageType: 'thermal', scaleImage: values.scaleImage });
+      this.setState({ imageType: 'thermal', scaleImage: values.scaleImage, autoSaveToCloud: values.autoSaveToCloud });
     } else {
-      this.setState({ imageType: 'photo', scaleImage: values.scaleImage });
+      this.setState({ imageType: 'photo', scaleImage: values.scaleImage, autoSaveToCloud: values.autoSaveToCloud });
     }
     this.props.closeGlobalSettingFormHandler();
   }
@@ -168,11 +171,6 @@ class BasicTable extends Component {
         formData.append('offsetValue', values.offsetValue.toString());
       else
         formData.append('offsetValue', '0.0');
-
-      if (values.autoSaveToCloud)
-        formData.append('autoSaveToCloud', values.autoSaveToCloud);
-      else
-        formData.append('autoSaveToCloud', false);
 
       axios.post('http://localhost:8000/api/settings/', formData, {
         headers: {
@@ -224,7 +222,9 @@ class BasicTable extends Component {
                     image={this.state.imageURL}
                     title="Device-Id = 0001"
                   >
-                    Id = 0001
+                    <Typography variant="caption" gutterBottom align="center">
+                      Dev_id = 0001
+                    </Typography>
                   </ImageCard> : null}
               </Grid>
 
@@ -236,7 +236,9 @@ class BasicTable extends Component {
                     image={this.state.imageURL}
                     title="Device-Id=0002"
                   >
-                    Id = 0002
+                    <Typography variant="caption" gutterBottom align="center">
+                      Dev_id = 0001
+                    </Typography>
                   </ImageCard> : null}
               </Grid>
 

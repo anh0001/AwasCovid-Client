@@ -95,6 +95,12 @@ class GlobalSettingForm extends React.Component {
                 marks
               />
             </div>
+            <div>
+              <Typography id="auto-save-cloud" gutterBottom>
+                Auto Save to Cloud
+              </Typography>
+              <Field name="autoSaveToCloud" component={SwitchRedux} />
+            </div>
           </section>
 
           <div className={css.buttonArea}>
