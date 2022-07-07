@@ -138,7 +138,7 @@
     "lru-memoize": "^1.0.2",
     "minimist": "1.2.0",
     "mocha": "^6.1.4",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "mui-datatables": "^2.13.1",
     "prop-types": "15.7.2",
     "rcolor": "^1.0.1",
