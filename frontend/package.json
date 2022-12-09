@@ -120,7 +120,7 @@
     "draft-js-plugins-editor": "^2.1.1",
     "draftjs-to-html": "^0.8.3",
     "draftjs-to-markdown": "^0.5.1",
-    "express": "4.16.4",
+    "express": "4.17.3",
     "firebase": "^7.5.0",
     "fontfaceobserver": "2.0.13",
     "fs": "0.0.1-security",
